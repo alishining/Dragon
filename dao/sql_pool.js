@@ -2,11 +2,11 @@ var mysql = require('mysql');
 
 exports.mysql_pool = function(){
 	return mysql.createPool({
-				host : "",
+				host : "rds10rt86mm7y97h14hr.mysql.rds.aliyuncs.com",
 				port : 3306,
-				user : "",
-				password : "",
-				database : ""
+				user : "shining",
+				password : "iatsjtu2011",
+				database : "gambling"
 		   });
 }
 
