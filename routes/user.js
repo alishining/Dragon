@@ -41,7 +41,7 @@ exports.payment = function(req, res, next){
 			income_balance = income_balance + money;
 			values = [income_balance, income_account];
 			sql.query(req, res, sql_mapping.update_balance, values, next, function(err, ret){
-				values = [pay_account, pay_balance];
+				values = [pay_balance, pay_account];
 				sql.query(req, res, sql_mapping.update_balance, values, next, function(err, ret){
 					result.header.code = "200";
 					result.header.msg  = "Success";
