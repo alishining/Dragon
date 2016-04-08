@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/hello', user_route.hello);
+app.post('/payment', user_route.payment);
 
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
