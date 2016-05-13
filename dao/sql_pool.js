@@ -6,7 +6,7 @@ exports.mysql_pool = function(){
 				port : 3306,
 				user : "shining",
 				password : "iatsjtu2011",
-				database : "gambling"
+				database : "wzppp"
 		   });
 }
 
