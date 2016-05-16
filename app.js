@@ -31,7 +31,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/send_message', user_route.send_message);
-app.post('/get_area_resource', user_route.get_area_resource);
 app.post('/login', user_route.login);
 app.post('/get_image_list', user_route.get_image_list);
 app.post('/image_detail', user_route.image_detail);

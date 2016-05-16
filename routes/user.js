@@ -89,55 +89,44 @@ exports.login = function(req, res, next){
 	}) 
 } 
 
-exports.get_area_resource = function(req, res, next){ 
-	var phone = req.body.phone; 
-	var num = Math.floor(Math.random()*10000); 
-	if (num < 10){ 
-		num = '000' + num; 
-	} else { 
-		if (num < 100){ 
-			num = '00' + num; 
-		} else { 
-			if (num < 1000) 
-				num = '0' + num; 
-		} 
-	} 
-	if (tools.sms(num, phone, 1)){ 
-		result.header.code = 200; 
-		result.header.msg  = constant.SUCCESS; 
-		result.data        = {result : 0, msg : constant.SUCCESS, num : num}; 
-		res.json(result); 
-	} else { 
-		result.header.code = 400; 
-		result.header.msg  = constant.FAILED; 
-		result.data        = {}; 
-		res.json(result); 
-	} 
-}
-
 exports.get_image_list = function(req, res, next){ 
-	var phone = req.body.phone; 
-	if (phone == undefined){ 
+	var adcode = req.body.adcode;
+	var page = req.body.page;
+	var type = req.body.type;
+	var uid = req.body.uid;
+	var car_num = req.body.car_num;
+	if (adcode == undefined || page == undefined || type == undefined || uid == undefined || car_num == undefined){ 
 		result.header.code = 400; 
 		result.header.msg  = constant.NO_PARAM; 
 		result.data        = {}; 
 		res.json(result); 
 		return; 
 	} 
-	var values = [phone]; 
-	sql.query(req, res, sql_mapping.login, values, next, function(err, ret){ 
-		try { 
+	var values = []; 
+	if (uid != ''){
+		values = [];
+		sql.query(req, res, sql_mapping.search_uid_image, values, next, function(err, ret){ 
 			result.header.code = 200; 
 			result.header.msg  = constant.SUCCESS; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
+			result.data = {pic_list : ret}; 
 			res.json(result); 
-		} catch(err) { 
-			result.header.code = 200;
-			result.header.msg  = constant.SUCCESS;; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
+		}) 
+	} else if (car_num != ''){
+		values = [];
+		sql.query(req, res, sql_mapping.search_car_image, values, next, function(err, ret){ 
+			result.header.code = 200; 
+			result.header.msg  = constant.SUCCESS; 
+			result.data = {pic_list : ret};    
 			res.json(result); 
-		} 
-	}) 
+		}) 
+	} else {
+		sql.query(req, res, sql_mapping.scan_image, values, next, function(err, ret){ 
+			result.header.code = 200; 
+			result.header.msg  = constant.SUCCESS; 
+			result.data = {pic_list : ret}; 
+			res.json(result); 
+		}) 
+	}
 } 
 
 exports.image_detail = function(req, res, next){ 
