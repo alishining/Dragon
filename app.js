@@ -1,4 +1,5 @@
 var express = require('express');
+var multipart = require('connect-multiparty');
 var http = require('http');
 var ejs = require('ejs');
 var path = require('path');
@@ -37,9 +38,9 @@ app.post('/image_detail', user_route.image_detail);
 app.post('/click_like', user_route.click_like);
 app.post('/submit_comment', user_route.submit_comment);
 app.post('/ranking', user_route.ranking);
-app.post('/upload_image', user_route.upload_image);
+var multipartMiddleware = multipart();
+app.post('/upload_image', multipartMiddleware, user_route.upload_image);
 app.post('/bind_car', user_route.bind_car);
-app.post('/search_image', user_route.search_image);
 app.post('/me', user_route.me);
 app.post('/logout', user_route.logout);
 
