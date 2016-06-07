@@ -95,10 +95,9 @@ exports.login = function(req, res, next){
 exports.get_image_list = function(req, res, next){ 
 	var adcode = req.body.adcode;
 	var page = req.body.page;
-	var type = req.body.type;
 	var uid = req.body.uid;
 	var car_num = req.body.car_num;
-	if (adcode == undefined || page == undefined || type == undefined || uid == undefined || car_num == undefined){ 
+	if (adcode == undefined || page == undefined || uid == undefined || car_num == undefined){ 
 		result.header.code = 400; 
 		result.header.msg  = constant.NO_PARAM; 
 		result.data        = {}; 
