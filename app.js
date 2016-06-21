@@ -33,15 +33,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/send_message', user_route.send_message);
 app.post('/login', user_route.login);
-app.post('/get_image_list', user_route.get_image_list);
-app.post('/image_detail', user_route.image_detail);
+app.post('/image_list_by_time', user_route.image_list_by_time);
+app.post('/image_list_by_fav', user_route.image_list_by_fav);
+app.post('/image_list_by_search', user_route.image_list_by_search);
+app.post('/image_list_by_me', user_route.image_list_by_me);
+app.post('/image_list_by_mycar', user_route.image_list_by_mycar);
+
 app.post('/click_like', user_route.click_like);
-app.post('/submit_comment', user_route.submit_comment);
-app.post('/ranking', user_route.ranking);
 var multipartMiddleware = multipart();
 app.post('/upload_image', multipartMiddleware, user_route.upload_image);
 app.post('/bind_car', user_route.bind_car);
-app.post('/me', user_route.me);
 app.post('/logout', user_route.logout);
 
 app.use(function(req, res, next) {

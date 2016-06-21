@@ -92,12 +92,10 @@ exports.login = function(req, res, next){
 	}) 
 } 
 
-exports.get_image_list = function(req, res, next){ 
-	var adcode = req.body.adcode;
+exports.image_list_by_time = function(req, res, next){ 
+	var adcode = req.body.adcode + '%';
 	var page = req.body.page;
-	var uid = req.body.uid;
-	var car_num = req.body.car_num;
-	if (adcode == undefined || page == undefined || uid == undefined || car_num == undefined){ 
+	if (adcode == undefined || page == undefined){ 
 		result.header.code = 400; 
 		result.header.msg  = constant.NO_PARAM; 
 		result.data        = {}; 
@@ -106,75 +104,136 @@ exports.get_image_list = function(req, res, next){
 	} 
 	var start = page * constant.PAGE_SIZE - constant.PAGE_SIZE;
 	var end   = start + constant.PAGE_SIZE;
-	var values = []; 
-	if (uid != ''){
-		values = [];
-		sql.query(req, res, sql_mapping.search_uid_image, values, next, function(err, ret){ 
-			var pic_list = [];
-			for (var i=start;i<end;i++){
-				if (ret[i] != undefined)
-					pic_list.push(ret[i]);
-			}
-			var next = 1;
-			if (pic_list.length != constant.PAGE_SIZE)
-				next = 0;
-			result.header.code = 200; 
-			result.header.msg  = constant.SUCCESS; 
-			result.data = {pic_list : pic_list, next : next}; 
-			res.json(result); 
-		}) 
-	} else if (car_num != ''){
-		values = [];
-		sql.query(req, res, sql_mapping.search_car_image, values, next, function(err, ret){ 
-			var pic_list = [];
-			for (var i=start;i<end;i++){
-				if (ret[i] != undefined)
-					pic_list.push(ret[i]);
-			}
-			var next = 1;
-			if (pic_list.length != constant.PAGE_SIZE)
-				next = 0;
-			result.header.code = 200; 
-			result.header.msg  = constant.SUCCESS; 
-			result.data = {pic_list : pic_list, next : next};    
-			res.json(result); 
-		}) 
-	} else {
-		sql.query(req, res, sql_mapping.scan_image, values, next, function(err, ret){ 
-			var pic_list = [];
-			for (var i=start;i<end;i++){
-				if (ret[i] != undefined)
-					pic_list.push(ret[i]);
-			}
-			var next = 1;
-			if (pic_list.length != constant.PAGE_SIZE)
-				next = 0;
-			result.header.code = 200; 
-			result.header.msg  = constant.SUCCESS; 
-			result.data = {pic_list : pic_list, next : next}; 
-			res.json(result); 
-		}) 
-	}
+	var values = [adcode]; 
+	sql.query(req, res, sql_mapping.image_list_by_time, values, next, function(err, ret){ 
+		var pic_list = [];
+		for (var i=start;i<end;i++){
+			if (ret[i] != undefined)
+				pic_list.push(ret[i]);
+		}
+		var next = 1;
+		if (pic_list.length != constant.PAGE_SIZE)
+			next = 0;
+		result.header.code = 200; 
+		result.header.msg  = constant.SUCCESS; 
+		result.data = {pic_list : pic_list, next : next}; 
+		res.json(result); 
+	}) 
 } 
 
-exports.image_detail = function(req, res, next){ 
-	var pid = req.body.pid; 
-	if (pid == undefined){ 
+exports.image_list_by_fav = function(req, res, next){ 
+	var adcode = req.body.adcode + '%';
+	var page = req.body.page;
+	if (adcode == undefined || page == undefined){ 
 		result.header.code = 400; 
 		result.header.msg  = constant.NO_PARAM; 
 		result.data        = {}; 
 		res.json(result); 
 		return; 
 	} 
-	var values = [pid]; 
-	sql.query(req, res, sql_mapping.image_detail, values, next, function(err, ret){ 
-		var comment_list = [];
-		for (var i=0;i<ret.length;i++){
-			comment_list.push(ret[i].content);
+	var start = page * constant.PAGE_SIZE - constant.PAGE_SIZE;
+	var end   = start + constant.PAGE_SIZE;
+	var values = [adcode]; 
+	sql.query(req, res, sql_mapping.image_list_by_fav, values, next, function(err, ret){ 
+		var pic_list = [];
+		for (var i=start;i<end;i++){
+			if (ret[i] != undefined)
+				pic_list.push(ret[i]);
 		}
+		var next = 1;
+		if (pic_list.length != constant.PAGE_SIZE)
+			next = 0;
 		result.header.code = 200; 
 		result.header.msg  = constant.SUCCESS; 
-		result.data = {}; 
+		result.data = {pic_list : pic_list, next : next}; 
+		res.json(result); 
+	}) 
+} 
+
+exports.image_list_by_search = function(req, res, next){ 
+	var adcode = req.body.adcode + '%';
+	var page = req.body.page;
+	var key = '%' + req.body.key + '%';
+	if (adcode == undefined || page == undefined || key == undefined){ 
+		result.header.code = 400; 
+		result.header.msg  = constant.NO_PARAM; 
+		result.data        = {}; 
+		res.json(result); 
+		return; 
+	} 
+	var start = page * constant.PAGE_SIZE - constant.PAGE_SIZE;
+	var end   = start + constant.PAGE_SIZE;
+	var values = [adcode, key, key, key]; 
+	sql.query(req, res, sql_mapping.image_list_by_search, values, next, function(err, ret){ 
+		var pic_list = [];
+		for (var i=start;i<end;i++){
+			if (ret[i] != undefined)
+				pic_list.push(ret[i]);
+		}
+		var next = 1;
+		if (pic_list.length != constant.PAGE_SIZE)
+			next = 0;
+		result.header.code = 200; 
+		result.header.msg  = constant.SUCCESS; 
+		result.data = {pic_list : pic_list, next : next};    
+		res.json(result); 
+	}) 
+} 
+
+exports.image_list_by_me = function(req, res, next){ 
+	var uid = req.body.uid;
+	var page = req.body.page;
+	if (uid == undefined){ 
+		result.header.code = 400; 
+		result.header.msg  = constant.NO_PARAM; 
+		result.data        = {}; 
+		res.json(result); 
+		return; 
+	} 
+	var start = page * constant.PAGE_SIZE - constant.PAGE_SIZE;
+	var end   = start + constant.PAGE_SIZE;
+	var values = [uid]; 
+	sql.query(req, res, sql_mapping.image_list_by_me, values, next, function(err, ret){ 
+		var pic_list = [];
+		for (var i=start;i<end;i++){
+			if (ret[i] != undefined)
+				pic_list.push(ret[i]);
+		}
+		var next = 1;
+		if (pic_list.length != constant.PAGE_SIZE)
+			next = 0;
+		result.header.code = 200; 
+		result.header.msg  = constant.SUCCESS; 
+		result.data = {pic_list : pic_list, next : next}; 
+		res.json(result); 
+	}) 
+} 
+
+exports.image_list_by_mycar = function(req, res, next){ 
+	var uid = req.body.uid;
+	var page = req.body.page;
+	if (uid == undefined){ 
+		result.header.code = 400; 
+		result.header.msg  = constant.NO_PARAM; 
+		result.data        = {}; 
+		res.json(result); 
+		return; 
+	} 
+	var start = page * constant.PAGE_SIZE - constant.PAGE_SIZE;
+	var end   = start + constant.PAGE_SIZE;
+	var values = [uid]; 
+	sql.query(req, res, sql_mapping.image_list_by_mycar, values, next, function(err, ret){ 
+		var pic_list = [];
+		for (var i=start;i<end;i++){
+			if (ret[i] != undefined)
+				pic_list.push(ret[i]);
+		}
+		var next = 1;
+		if (pic_list.length != constant.PAGE_SIZE)
+			next = 0;
+		result.header.code = 200; 
+		result.header.msg  = constant.SUCCESS; 
+		result.data = {pic_list : pic_list, next : next}; 
 		res.json(result); 
 	}) 
 } 
@@ -197,56 +256,6 @@ exports.click_like = function(req, res, next){
 	}) 
 } 
 
-exports.submit_comment = function(req, res, next){ 
-	var phone = req.body.phone; 
-	if (phone == undefined){ 
-		result.header.code = 400; 
-		result.header.msg  = constant.NO_PARAM; 
-		result.data        = {}; 
-		res.json(result); 
-		return; 
-	} 
-	var values = [phone]; 
-	sql.query(req, res, sql_mapping.login, values, next, function(err, ret){ 
-		try { 
-			result.header.code = 200; 
-			result.header.msg  = constant.SUCCESS; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
-			res.json(result); 
-		} catch(err) { 
-			result.header.code = 200;
-			result.header.msg  = constant.SUCCESS;; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
-			res.json(result); 
-		} 
-	}) 
-} 
-
-exports.ranking = function(req, res, next){ 
-	var phone = req.body.phone; 
-	if (phone == undefined){ 
-		result.header.code = 400; 
-		result.header.msg  = constant.NO_PARAM; 
-		result.data        = {}; 
-		res.json(result); 
-		return; 
-	} 
-	var values = [phone]; 
-	sql.query(req, res, sql_mapping.login, values, next, function(err, ret){ 
-		try { 
-			result.header.code = 200; 
-			result.header.msg  = constant.SUCCESS; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
-			res.json(result); 
-		} catch(err) { 
-			result.header.code = 200;
-			result.header.msg  = constant.SUCCESS;; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
-			res.json(result); 
-		} 
-	}) 
-} 
-
 exports.upload_image = function(req, res, next){ 
 	var tmp_filename = req.files.file.path;
 	var detail = req.body.detail;
@@ -256,8 +265,7 @@ exports.upload_image = function(req, res, next){
 	var ds = req.body.ds;
 	var adcode = req.body.adcode;
 	var tag = req.body.tag;
-	var fav = req.body.fav;
-	if (uid == undefined || type == undefined || loc == undefined || ds == undefined || detail == undefined || fav == undefined){ 
+	if (uid == undefined || type == undefined || loc == undefined || ds == undefined || detail == undefined){ 
 		result.header.code = 400; 
 		result.header.msg  = constant.NO_PARAM; 
 		result.data        = {}; 
@@ -272,7 +280,7 @@ exports.upload_image = function(req, res, next){
 	qiniu.io.putFile(uptoken, key, tmp_filename, extra, function(err, ret) {
 		if (!err) {
 			var pic_url = constant.QINIU_PATH + key;
-			scan.scan_car(req, res, next, result, uid, pic_url, ds, adcode, loc, tag, detail, fav, tmp_filename, req.files.file.size);
+			scan.scan_car(req, res, next, result, uid, pic_url, ds, adcode, loc, tag, detail, tmp_filename, req.files.file.size);
 		} else {
 			result.header.code = '200';
 			result.header.msg  = constant.SUCCESS;
@@ -285,46 +293,21 @@ exports.upload_image = function(req, res, next){
 } 
 
 exports.bind_car = function(req, res, next){ 
-	var phone = req.body.phone; 
+	var uid = req.body.uid; 
 	var car_num = req.body.car_num;
-	if (phone == undefined || car_num == undefined){ 
+	if (uid == undefined || car_num == undefined){ 
 		result.header.code = 400; 
 		result.header.msg  = constant.NO_PARAM; 
 		result.data        = {}; 
 		res.json(result); 
 		return; 
 	} 
-	var values = [car_num, phone]; 
+	var values = [',' + car_num, uid]; 
 	sql.query(req, res, sql_mapping.bind_car, values, next, function(err, ret){ 
 		result.header.code = 200; 
 		result.header.msg  = constant.SUCCESS; 
-		result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
+		result.data = {result : 0, msg : constant.SUCCESS}; 
 		res.json(result); 
-	}) 
-} 
-
-exports.me = function(req, res, next){ 
-	var phone = req.body.phone; 
-	if (phone == undefined){ 
-		result.header.code = 400; 
-		result.header.msg  = constant.NO_PARAM; 
-		result.data        = {}; 
-		res.json(result); 
-		return; 
-	} 
-	var values = [phone]; 
-	sql.query(req, res, sql_mapping.login, values, next, function(err, ret){ 
-		try { 
-			result.header.code = 200; 
-			result.header.msg  = constant.SUCCESS; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
-			res.json(result); 
-		} catch(err) { 
-			result.header.code = 200;
-			result.header.msg  = constant.SUCCESS;; 
-			result.data = {result : 0, uid : phone, msg : constant.SUCCESS}; 
-			res.json(result); 
-		} 
 	}) 
 } 
 

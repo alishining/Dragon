@@ -6,7 +6,7 @@ var request = require('request');
 var fs = require('fs');
 
 
-exports.scan_car = function(req, res, next, result, uid, pic_url, time, adcode, loc, tag, text, fav, filePath, fileSize) {
+exports.scan_car = function(req, res, next, result, uid, pic_url, time, adcode, loc, tag, text, filePath, fileSize) {
 	var r = request.post(constant.SB_PATH, function(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var body = JSON.parse(response.body);
@@ -15,13 +15,20 @@ exports.scan_car = function(req, res, next, result, uid, pic_url, time, adcode, 
 			} else {
 				var car_num = '';
 			}
-			var values = [uid, pic_url, time, adcode, loc, car_num, '', '', 0, 0, tag, text, fav];
-			sql.query(req, res, sql_mapping.upload_img, values, next, function(err, ret){
-				result.header.code = '200';
-				result.header.msg  = constant.SUCCESS;
-				result.data        = {result : '0',
-									  msg    : constant.UPLOAD_SUCCESS};
-				res.json(result);
+			var values = [car_num];
+			sql.query(req, res, sql_mapping.get_car_owner, values, next, function(err, ret){
+				var car_owner = -1;
+				if (ret != undefined){
+					car_owner = ret[0].uid;
+				}
+				values = [uid, pic_url, time, adcode, loc, car_owner, car_num, '', '', 0, 0, tag, text, 0];
+				sql.query(req, res, sql_mapping.upload_img, values, next, function(err, ret){
+					result.header.code = '200';
+					result.header.msg  = constant.SUCCESS;
+					result.data        = {result : '0',
+										  msg    : constant.UPLOAD_SUCCESS};
+					res.json(result);
+				});
 			});
 		}
 		});
